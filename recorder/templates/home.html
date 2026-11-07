@@ -1,0 +1,33 @@
+<h1>Voice Notes</h1>
+{% csrf_token %}
+<button id="btn">Record</button>
+
+{% for r in recordings %}
+  <p><audio controls src="{{ r.audio_file.url }}"></audio><br>{{ r.transcript }}</p>
+{% endfor %}
+
+<script>
+let rec, chunks = [];
+
+btn.onclick = async () => {
+  if (rec?.state === "recording") return rec.stop();
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  rec = new MediaRecorder(stream);
+  chunks = [];
+  rec.ondataavailable = e => chunks.push(e.data);
+  rec.onstop = async () => {
+    stream.getTracks().forEach(t => t.stop());
+    btn.disabled = true;
+    btn.textContent = "Transcribing...";
+
+    const form = new FormData();
+    form.append("audio", new Blob(chunks, { type: rec.mimeType }), "note.webm");
+    form.append("csrfmiddlewaretoken", document.querySelector("[name=csrfmiddlewaretoken]").value);
+    await fetch("", { method: "POST", body: form });
+    location.reload();
+  };
+  rec.start();
+  btn.textContent = "Stop";
+};
+</script>
