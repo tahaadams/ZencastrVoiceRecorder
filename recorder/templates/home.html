@@ -3,7 +3,16 @@
 <button id="btn">Record</button>
 
 {% for r in recordings %}
-  <p><audio controls src="{{ r.audio_file.url }}"></audio><br>{{ r.transcript }}</p>
+  <p>
+    <audio controls src="{{ r.audio_file.url }}"></audio><br>
+    {{ r.transcript }}
+  </p>
+
+  {% if r.transcript %}
+    <a href="{% url 'download_transcript' r.id %}" class="btn-download">
+      Download Transcript (.txt)
+    </a>
+  {% endif %}
 {% endfor %}
 
 <script>

@@ -5,7 +5,7 @@ import av
 import numpy as np
 from django.core.files.base import ContentFile
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from faster_whisper import WhisperModel
 from .models import Recording
 
@@ -48,3 +48,19 @@ def home(request):
         rec.save()
         return HttpResponse()
     return render(request, "home.html", {"recordings": Recording.objects.order_by("created_at")})
+
+
+def download_transcript(request, recording_id):
+    rec = get_object_or_404(Recording, id=recording_id)
+
+    transcript_text = (
+        rec.transcript.strip()
+        if rec.transcript
+        else "No transcript available."
+    )
+
+    response = HttpResponse(transcript_text, content_type="text/plain; charset=utf-8")
+    response["Content-Disposition"] = (
+        f'attachment; filename="transcript_{rec.id}.txt"'
+    )
+    return response

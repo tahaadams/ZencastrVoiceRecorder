@@ -1,0 +1,13 @@
+Scenario:
+
+Users can currently record audio, play back normalized WAV files, and view generated Whisper transcripts on the web page. Product wants a quick way for users to save their transcripts locally without manually highlighting and copying text from the browser.
+
+Task:
+
+Implement a feature that allows a user to download any saved recording's transcript as a plain text (.txt) file directly from the UI.
+
+Requirements:
+
+• Backend (urls.py, views.py): Create a new Django view and URL route ("recordings/<int:recording_id>/download/") that fetches the requested recording by ID and returns its transcript text as an attachment (Content-Disposition: attachment; filename="transcript_{recording.id}.txt")
+
+• Frontend (home.html): Add a Download Transcript button or link next to each recording/transcript in the HTML template that triggers the file download.
